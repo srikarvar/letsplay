@@ -9,8 +9,23 @@ import { Link } from "react-router-dom";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { useNavigate } from "react-router-dom";
 
-export default class CreateRoomPage extends Component {
+
+const withRouter = WrappedComponent => props => {
+    const navigate = useNavigate();
+    // etc... other react-router-dom v6 hooks
+  
+    return (
+      <WrappedComponent
+        {...props}
+        navigate={navigate}
+        // etc...
+      />
+    );
+  };
+
+class CreateRoomPage extends Component {
 
     defaultVotes = 2;
 
@@ -47,7 +62,7 @@ handleRoomButtonPressed() {
     };
     fetch("/api/create-room", requestOptions)
         .then((response) => response.json())
-        .then((data) => console.log(data));
+        .then((data) => this.props.navigate('/room/' + data.code));
 }
 
 render() {
@@ -118,3 +133,5 @@ render() {
      );
 }
 }
+
+export default withRouter(CreateRoomPage);
