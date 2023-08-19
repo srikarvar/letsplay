@@ -19,6 +19,7 @@ export default class HomePage extends Component {
         this.state = {
             roomCode: null,
         };
+        this.clearRoomCode = this.clearRoomCode.bind(this);
     }
 
     async componentDidMount() {
@@ -29,6 +30,11 @@ export default class HomePage extends Component {
         })
     }
 
+    clearRoomCode() {
+        this.setState({
+          roomCode: null,
+        });
+    }
 
     renderHomePage() {
         if(this.state.roomCode) {
@@ -48,7 +54,7 @@ export default class HomePage extends Component {
                   <Button color="primary" to="/join" component={Link}>
                     Join a Room
                   </Button>
-                  <Button color="secondary" to="/create" component={Link}>
+                  <Button color="secondary" to="/create-room" component={Link}>
                     Create a Room
                   </Button>
                 </ButtonGroup>
@@ -65,7 +71,7 @@ export default class HomePage extends Component {
                     <Route exact path="/" element={this.renderHomePage()} />
                     <Route path="/join" element={<RoomJoinPage />} />
                     <Route path="/create-room" element={<CreateRoomPage />} />
-                    <Route exact path="/room/:roomCode" element={<Room />} render={({ match }) => <Room id={match.params.roomCode} />} />
+                    <Route path='/room/:roomCode' element={<Room clearRoomCodeCallback={this.clearRoomCode} />} />
                 </Routes>
             </Router>
         )
