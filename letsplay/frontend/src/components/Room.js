@@ -1,28 +1,3 @@
-// import React, { Component } from "react";
-
-// export default class Room extends Component {
-//     constructor(props) {
-//         super(props);
-//         this.state = {
-//             votesToSkip: 2,
-//             guestCanPause: false,
-//             isHost: false,
-//         };
-//         this.roomCode = this.props.match.params.roomCode;
-
-//     }
-
-//     render() {
-//         return (
-//             <div>
-//                 <h3>{this.roomCode}</h3>
-//                 <p>Votes: {this.state.votesToSkip}</p>
-//                 <p>Guest Can Pause: {this.state.guestCanPause.toString()}</p>
-//                 <p>Host: {this.state.isHost.toString()}</p>   
-//             </div>
-//         )
-//     }
-// }
 
 import React, { Component } from "react";
 import { useParams } from 'react-router-dom';
@@ -43,6 +18,7 @@ class Room extends Component {
       guestCanPause: false,
       isHost: false,
       showSettings: false,
+      spotifyAuthenticated: false,
     };
 
     this.roomCode = this.props.params.roomCode;
@@ -52,6 +28,7 @@ class Room extends Component {
     this.renderSettings = this.renderSettings.bind(this);
     this.getRoomDetails = this.getRoomDetails.bind(this);
     this.getRoomDetails();
+    this.authenticateSpotify = this.authenticateSpotify.bind(this);
   }
   LeaveButton() {
     const navigate = useNavigate();
@@ -100,8 +77,29 @@ class Room extends Component {
           guestCanPause: data.guest_can_pause,
           isHost: data.is_host,
         });
+        if (this.state.isHost) {
+          this.authenticateSpotify();
+        }
       });
   }
+
+  authenticateSpotify() {
+    fetch("/spotify/is-authenticated")
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({
+          spotifyAuthenticated: data.status,
+        });
+        if (!data.status) {
+          fetch("/spotify/get-auth-url")
+            .then((response) => response.json())
+            .then((data) => {
+              window.location.replace(data.url);
+            });
+        }
+      });
+  }
+
 
   renderSettings() {
     return (<Grid container spacing={1}>
